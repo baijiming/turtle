@@ -1,5 +1,5 @@
 const mysql = require("mysql");
-const md5 = require("md5-node");
+const md5 = require("blueimp-md5");
 const {v3: uuid} = require("uuid");
 
 const options = {
