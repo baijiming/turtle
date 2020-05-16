@@ -1,0 +1,25 @@
+{
+  "name": "turtle",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baijiming/turtle.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/baijiming/turtle/issues"
+  },
+  "homepage": "https://github.com/baijiming/turtle#readme",
+  "dependencies": {
+    "log4js": "^6.2.1",
+    "md5-node": "^1.0.1",
+    "mysql": "^2.18.1",
+    "uuid": "^8.0.0"
+  }
+}
