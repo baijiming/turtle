@@ -5,6 +5,11 @@ const {v3: uuid} = require("uuid");
 const options = {
     //自动修复数据表
     autoRepairTable: false,
+    //
+    log4js: {
+        is_enabled: false,
+        file_name: 'turtle_db.log'
+    },
     mysql: {
         timezone: 'UTC',
         dateStrings: [
@@ -39,6 +44,7 @@ const successRes = (data) => {
 };
 
 let pool = null;
+let logger = null;
 
 // 组装SQL
 const assembleWhereStmt = (condition) => {
@@ -243,7 +249,23 @@ const saveFile = async (tableFile, fileUrl, referUrl, assignedFileName = null) =
 
 // 配置
 const config = (customOptions) => {
-    const {mysql:mysqlOptions} = Object.assign(options, customOptions);
+    const {mysql:mysqlOptions, log4js: {is_enabled: isLog4jsEnabled, file_name}} = Object.assign(options, customOptions);
+
+    if (isLog4jsEnabled) {
+        const log4js = require("log4js");
+        log4js.configure({
+            appenders: {
+                turtle_db: {type: 'file', filename: file_name}
+            },
+            categories: {
+                default: {
+                    appenders: ['turtle_db'], level: 'info'
+                }
+            }
+        });
+        logger = log4js.getLogger('turtle_db');
+    }
+
     //
     pool = mysql.createPool(mysqlOptions);
     pool.on('connection', conn => {
@@ -364,11 +386,17 @@ const execute = async (sql, params = null) => {
     return new Promise((resolve, reject) => {
         return pool.getConnection((err, connection) => {
             if (err) {
+                if (logger){
+                    logger.error(err.message);
+                }
                 resolve(failedRes(err.message));
             } else {
                 connection.query(sql, params, async (err, data, fields) => {
                     connection.release();
                     if (err) {
+                        if (logger){
+                            logger.error(err.message);
+                        }
                         if (options.autoRepairTable) {
                             const result = await handleError();
                             if (result) {
