@@ -398,7 +398,7 @@ const execute = async (sql, params = null) => {
                             logger.error(err.message);
                         }
                         if (options.autoRepairTable) {
-                            const result = await handleError();
+                            const result = await handleError(err, sql);
                             if (result) {
                                 const data = await execute(sql, params);
                                 resolve(data);
