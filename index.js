@@ -370,7 +370,7 @@ const execute = async (sql, params = null) => {
                     connection.release();
                     if (err) {
                         if (options.autoRepairTable) {
-                            const result = await handleError();
+                            const result = await handleError(err, sql);
                             if (result) {
                                 const data = await execute(sql, params);
                                 resolve(data);
