@@ -309,7 +309,7 @@ const updateBySqlStmt = async (sqlStmt, params = null) => {
 };
 
 const saveOrUpdate = async (tableName, entity, condition) => {
-    if (condition instanceof Array && condition.length > 0) {
+    if (!!condition !== false) {
         const isExisted = await has(tableName, condition);
         if (isExisted) {
             return await update(tableName, entity, condition);
