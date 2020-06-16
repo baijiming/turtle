@@ -84,12 +84,15 @@ const assembleUpdateStmt = (tableName, entity, condition) => {
     return {sqlStmt, params: params.concat(whereParams)};
 };
 
-const assembleSelectStmt = (tableName, condition, fields = '*') => {
+const assembleSelectStmt = (tableName, condition, fields = '*', limitStmt = null) => {
     if (fields instanceof Array) {
         fields = fields.join(',');
     }
     const {whereStmt, whereParams: params} = assembleWhereStmt(condition);
-    const sqlStmt = `select ${fields} from ${tableName} ${whereStmt && 'where ' + whereStmt || ''}`;
+    let sqlStmt = `select ${fields} from ${tableName} ${whereStmt && 'where ' + whereStmt || ''}`;
+    if (limitStmt) {
+        sqlStmt = `${sqlStmt} limit ${limitStmt}`;
+    }
     return {sqlStmt, params};
 };
 
@@ -298,8 +301,8 @@ const saveOrUpdate = async (tableName, entity, condition) => {
     return false;
 };
 
-const all = async (tableName, condition, fields = '*') => {
-    const {sqlStmt, params} = assembleSelectStmt(tableName, condition, fields);
+const all = async (tableName, condition, fields = '*', limitStmt = null) => {
+    const {sqlStmt, params} = assembleSelectStmt(tableName, condition, fields, limitStmt);
     return await allBySqlStmt(sqlStmt, params);
 };
 
@@ -309,8 +312,7 @@ const allBySqlStmt = async (sqlStmt, params = null) => {
 };
 
 const first = async (tableName, condition, field = '*') => {
-    let {sqlStmt, params} = assembleSelectStmt(tableName, condition, field);
-    sqlStmt = sqlStmt + ' limit 0,1';
+    let {sqlStmt, params} = assembleSelectStmt(tableName, condition, field, "0,1");
     return await firstBySqlStmt(sqlStmt, params);
 };
 
